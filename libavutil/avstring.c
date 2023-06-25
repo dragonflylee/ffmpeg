@@ -265,6 +265,10 @@ const char *av_basename(const char *path)
     d = strchr(path, ':');
     p = FFMAX3(p, q, d);
 #endif
+#ifdef __vita__
+    char *d = strchr(path, ':');
+    p = FFMAX(p, d);
+#endif
 
     if (!p)
         return path;
@@ -275,6 +279,11 @@ const char *av_basename(const char *path)
 const char *av_dirname(char *path)
 {
     char *p = path ? strrchr(path, '/') : NULL;
+
+#ifdef __vita__
+    char *d = strchr(path, ':');
+    p = FFMAX(p, d);
+#endif
 
 #if HAVE_DOS_PATHS
     char *q = path ? strrchr(path, '\\') : NULL;
