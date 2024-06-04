@@ -318,6 +318,7 @@ External library support:
   --enable-decklink        enable Blackmagic DeckLink I/O support [no]
   --enable-mbedtls         enable mbedTLS, needed for https support
                            if openssl, gnutls or libtls is not used [no]
+  --enable-libnx           enable libnx, needed for https support
   --enable-mediacodec      enable Android MediaCodec support [no]
   --enable-mediafoundation enable encoding via MediaFoundation [auto]
   --disable-metal          disable Apple Metal framework [autodetect]
@@ -1854,6 +1855,7 @@ EXTERNAL_AUTODETECT_LIBRARY_LIST="
     mediafoundation
     metal
     schannel
+    libnx
     sdl2
     securetransport
     sndio
@@ -3822,7 +3824,7 @@ sctp_protocol_select="network"
 securetransport_conflict="openssl gnutls libtls mbedtls"
 srtp_protocol_select="rtp_protocol srtp"
 tcp_protocol_select="network"
-tls_protocol_deps_any="gnutls openssl schannel securetransport libtls mbedtls"
+tls_protocol_deps_any="gnutls openssl schannel securetransport libtls mbedtls libnx"
 tls_protocol_select="tcp_protocol"
 udp_protocol_select="network"
 udplite_protocol_select="network"
@@ -3845,6 +3847,7 @@ libsmbclient_protocol_deps="libsmbclient gplv3"
 libsrt_protocol_deps="libsrt"
 libsrt_protocol_select="network"
 libssh_protocol_deps="libssh"
+libnx_conflict="openssl gnutls libtls mbedtls schannel securetransport"
 libtls_conflict="openssl gnutls mbedtls"
 libzmq_protocol_deps="libzmq"
 libzmq_protocol_select="network"
@@ -7221,6 +7224,11 @@ enabled schannel &&
     test_cpp_condition winerror.h "defined(SEC_I_CONTEXT_EXPIRED)" &&
     schannel_extralibs="-lsecur32" ||
         disable schannel
+
+enabled libnx &&
+    check_headers "switch.h" &&
+    libnx_extralibs="-lnx" ||
+        disable libnx
 
 makeinfo --version > /dev/null 2>&1 && enable makeinfo  || disable makeinfo
 enabled makeinfo \
