@@ -318,6 +318,7 @@ External library support:
   --enable-decklink        enable Blackmagic DeckLink I/O support [no]
   --enable-mbedtls         enable mbedTLS, needed for https support
                            if openssl, gnutls or libtls is not used [no]
+  --enable-libnx           enable libnx, needed for https support
   --enable-mediacodec      enable Android MediaCodec support [no]
   --enable-mediafoundation enable encoding via MediaFoundation [auto]
   --disable-metal          disable Apple Metal framework [autodetect]
@@ -1852,6 +1853,7 @@ EXTERNAL_AUTODETECT_LIBRARY_LIST="
     mediafoundation
     metal
     schannel
+    libnx
     sdl2
     securetransport
     sndio
@@ -3818,7 +3820,7 @@ sctp_protocol_select="network"
 securetransport_conflict="openssl gnutls libtls mbedtls"
 srtp_protocol_select="rtp_protocol srtp"
 tcp_protocol_select="network"
-tls_protocol_deps_any="gnutls openssl schannel securetransport libtls mbedtls"
+tls_protocol_deps_any="gnutls openssl schannel securetransport libtls mbedtls libnx"
 tls_protocol_select="tcp_protocol"
 udp_protocol_select="network"
 udplite_protocol_select="network"
