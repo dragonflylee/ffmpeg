@@ -272,11 +272,13 @@ External library support:
   --enable-libshaderc      enable GLSL->SPIRV compilation via libshaderc [no]
   --enable-libshine        enable fixed-point MP3 encoding via libshine [no]
   --enable-libsmbclient    enable Samba protocol via libsmbclient [no]
+  --enable-libsmb2         enable Samba protocol via libsmb2 [no]
   --enable-libsnappy       enable Snappy compression, needed for hap encoding [no]
   --enable-libsoxr         enable Include libsoxr resampling [no]
   --enable-libspeex        enable Speex de/encoding via libspeex [no]
   --enable-libsrt          enable Haivision SRT protocol via libsrt [no]
   --enable-libssh          enable SFTP protocol via libssh [no]
+  --enable-libssh2         enable SFTP protocol via libssh2 [no]
   --enable-libsvtav1       enable AV1 encoding via SVT [no]
   --enable-libtensorflow   enable TensorFlow as a DNN module backend
                            for DNN based filters like sr [no]
@@ -1953,11 +1955,13 @@ EXTERNAL_LIBRARY_LIST="
     libshaderc
     libshine
     libsmbclient
+    libsmb2
     libsnappy
     libsoxr
     libspeex
     libsrt
     libssh
+    libssh2
     libsvtav1
     libtensorflow
     libtesseract
@@ -3816,9 +3820,11 @@ librtmps_protocol_deps="librtmp"
 librtmpt_protocol_deps="librtmp"
 librtmpte_protocol_deps="librtmp"
 libsmbclient_protocol_deps="libsmbclient gplv3"
+libsmb2_protocol_deps="libsmb2"
 libsrt_protocol_deps="libsrt"
 libsrt_protocol_select="network"
 libssh_protocol_deps="libssh"
+libssh2_protocol_deps="libssh2"
 libtls_conflict="openssl gnutls mbedtls"
 libzmq_protocol_deps="libzmq"
 libzmq_protocol_select="network"
@@ -6991,9 +6997,12 @@ enabled libshaderc        && require_pkg_config spirv_compiler "shaderc >= 2019.
 enabled libshine          && require_pkg_config libshine shine shine/layer3.h shine_encode_buffer
 enabled libsmbclient      && { check_pkg_config libsmbclient smbclient libsmbclient.h smbc_init ||
                                require libsmbclient libsmbclient.h smbc_init -lsmbclient; }
+enabled libsmb2           && { check_pkg_config libsmb2 libsmb2 smb2/smb2-errors.h SMB2_STATUS_SUCCESS ||
+                               require libsmb2 smb2/smb2-errors.h SMB2_STATUS_SUCCESS -lsmb2; }
 enabled libsnappy         && require libsnappy snappy-c.h snappy_compress -lsnappy -lstdc++
 enabled libsoxr           && require libsoxr soxr.h soxr_create -lsoxr
 enabled libssh            && require_pkg_config libssh "libssh >= 0.6.0" libssh/sftp.h sftp_init
+enabled libssh2           && require_pkg_config libssh2 libssh2 libssh2.h libssh2_init
 enabled libspeex          && require_pkg_config libspeex speex speex/speex.h speex_decoder_init
 enabled libsrt            && require_pkg_config libsrt "srt >= 1.3.0" srt/srt.h srt_socket
 enabled libsvtav1         && require_pkg_config libsvtav1 "SvtAv1Enc >= 0.9.0" EbSvtAv1Enc.h svt_av1_enc_init_handle
