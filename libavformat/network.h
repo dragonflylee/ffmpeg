@@ -219,6 +219,14 @@ int ff_getnameinfo(const struct sockaddr *sa, int salen,
 #define getnameinfo ff_getnameinfo
 #endif /* !HAVE_GETADDRINFO */
 
+#if HAVE_GETADDRINFO && __SWITCH__
+#undef getnameinfo
+int ff_getnameinfo(const struct sockaddr *sa, int salen,
+                   char *host, int hostlen,
+                   char *serv, int servlen, int flags);
+#define getnameinfo ff_getnameinfo
+#endif
+
 #if !HAVE_GETADDRINFO || HAVE_WINSOCK2_H
 const char *ff_gai_strerror(int ecode);
 #undef gai_strerror

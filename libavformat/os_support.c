@@ -137,6 +137,10 @@ void ff_freeaddrinfo(struct addrinfo *res)
     av_freep(&res);
 }
 
+#endif 
+
+#if HAVE_GETADDRINFO && __SWITCH__
+
 int ff_getnameinfo(const struct sockaddr *sa, int salen,
                    char *host, int hostlen,
                    char *serv, int servlen, int flags)
