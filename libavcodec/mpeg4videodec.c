@@ -3864,6 +3864,9 @@ const FFCodec ff_mpeg4_decoder = {
 #if CONFIG_MPEG4_VIDEOTOOLBOX_HWACCEL
                                HWACCEL_VIDEOTOOLBOX(mpeg4),
 #endif
+#if CONFIG_MPEG4_NVTEGRA_HWACCEL
+                               HWACCEL_NVTEGRA(mpeg4),
+#endif
                                NULL
                            },
 };
