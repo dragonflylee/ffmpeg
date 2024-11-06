@@ -26,6 +26,7 @@
 #include "url.h"
 #include "tls.h"
 #include "libavutil/parseutils.h"
+#include "libavutil/time.h"
 
 typedef struct TLSContext {
     const AVClass *class;
@@ -105,7 +106,7 @@ static int tls_open(URLContext *h, const char *uri, int flags, AVDictionary **op
 
     while (rc = sslConnectionDoHandshake(&tls_ctx->conn, NULL, NULL, NULL, 0)) {
         if (R_VALUE(rc) == MAKERESULT(123, 204)) { // PR_WOULD_BLOCK_ERROR
-            svcSleepThread(100000000);
+            av_usleep(10000);
             continue;
         }
         if (R_VALUE(rc) == MAKERESULT(123, 207)) {
