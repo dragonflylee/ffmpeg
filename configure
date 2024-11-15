@@ -5829,7 +5829,7 @@ case $target_os in
         ;;
     vita)
         add_cflags -ftree-vectorize -fomit-frame-pointer -ffast-math -D_BSD_SOURCE
-        add_cppflags -ftree-vectorize -fomit-frame-pointer -ffast-math -fno-rtti -fno-exceptions -std=gnu++11 -D_BSD_SOURCE
+        add_cppflags -ftree-vectorize -fomit-frame-pointer -ffast-math -fno-exceptions -D_BSD_SOURCE
         add_ldflags -Wl,-q
         disable runtime_cpudetect
         ;;
