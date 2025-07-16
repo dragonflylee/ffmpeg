@@ -500,40 +500,84 @@ static const AVCodec *choose_decoder(const OptionsContext *o, AVFormatContext *s
 
 {
     char *codec_name = NULL;
+#if CONFIG_NVV4L2
+    int nvv4l2_pix_fmt_ok;
+#endif
 
     MATCH_PER_STREAM_OPT(codec_names, str, codec_name, s, st);
-    if (codec_name) {
-        const AVCodec *codec = find_codec_or_die(NULL, codec_name, st->codecpar->codec_type, 0);
-        st->codecpar->codec_id = codec->id;
-        if (recast_media && st->codecpar->codec_type != codec->type)
-            st->codecpar->codec_type = codec->type;
-        return codec;
-    } else {
-        if (st->codecpar->codec_type == AVMEDIA_TYPE_VIDEO &&
-            hwaccel_id == HWACCEL_GENERIC &&
-            hwaccel_device_type != AV_HWDEVICE_TYPE_NONE) {
-            const AVCodec *c;
-            void *i = NULL;
 
-            while ((c = av_codec_iterate(&i))) {
-                const AVCodecHWConfig *config;
+#if CONFIG_NVV4L2
+    nvv4l2_pix_fmt_ok = st->codecpar->format == AV_PIX_FMT_NONE ||
+                        st->codecpar->format == AV_PIX_FMT_NV12 ||
+                        st->codecpar->format == AV_PIX_FMT_YUV420P;
+    if (st->codecpar->codec_id == AV_CODEC_ID_HEVC)
+        nvv4l2_pix_fmt_ok = st->codecpar->format == AV_PIX_FMT_YUV420P10LE ||
+                            st->codecpar->format == AV_PIX_FMT_P010 ||
+                            nvv4l2_pix_fmt_ok;
 
-                if (c->id != st->codecpar->codec_id ||
-                    !av_codec_is_decoder(c))
-                    continue;
-
-                for (int j = 0; config = avcodec_get_hw_config(c, j); j++) {
-                    if (config->device_type == hwaccel_device_type) {
-                        av_log(NULL, AV_LOG_VERBOSE, "Selecting decoder '%s' because of requested hwaccel method %s\n",
-                               c->name, av_hwdevice_get_type_name(hwaccel_device_type));
-                        return c;
-                    }
-                }
-            }
+    /* Force software decoding if codec name not defined and pixel format not supported. */
+    if (!codec_name && !nvv4l2_pix_fmt_ok) {
+        switch (st->codecpar->codec_id) {
+        case AV_CODEC_ID_H264:
+            codec_name = (char *)"h264";
+            break;
+        case AV_CODEC_ID_HEVC:
+            codec_name = (char *)"hevc";
+            break;
+        case AV_CODEC_ID_MPEG2VIDEO:
+            codec_name = (char *)"mpeg2video";
+            break;
+        case AV_CODEC_ID_MPEG4:
+            codec_name = (char *)"mpeg4";
+            break;
+        case AV_CODEC_ID_VP8:
+            codec_name = (char *)"vp8";
+            break;
+        case AV_CODEC_ID_VP9:
+            codec_name = (char *)"vp9";
+            break;
         }
-
-        return avcodec_find_decoder(st->codecpar->codec_id);
     }
+#endif
+
+    if (!codec_name)
+        return avcodec_find_decoder(st->codecpar->codec_id);
+
+#if CONFIG_NVV4L2
+    if (nvv4l2_pix_fmt_ok) {
+        /* Force hardware decoding if pixel format supported. */
+        if (strcmp(codec_name, "h264") == 0)
+            return avcodec_find_decoder(st->codecpar->codec_id);
+        else if (strcmp(codec_name, "hevc") == 0)
+            return avcodec_find_decoder(st->codecpar->codec_id);
+        else if (strcmp(codec_name, "mpeg2video") == 0)
+            return avcodec_find_decoder(st->codecpar->codec_id);
+        else if (strcmp(codec_name, "mpeg4") == 0)
+            return avcodec_find_decoder(st->codecpar->codec_id);
+        else if (strcmp(codec_name, "vp8") == 0)
+            return avcodec_find_decoder(st->codecpar->codec_id);
+        else if (strcmp(codec_name, "vp9") == 0)
+            return avcodec_find_decoder(st->codecpar->codec_id);
+    } else {
+        /* Force software decoding if pixel format not supported. */
+        if (strcmp(codec_name, "h264_nvv4l2") == 0)
+            codec_name = (char *)"h264";
+        else if (strcmp(codec_name, "hevc_nvv4l2") == 0)
+            codec_name = (char *)"hevc";
+        else if (strcmp(codec_name, "mpeg2video_nvv4l2") == 0)
+            codec_name = (char *)"mpeg2video";
+        else if (strcmp(codec_name, "mpeg4_nvv4l2") == 0)
+            codec_name = (char *)"mpeg4";
+        else if (strcmp(codec_name, "vp8_nvv4l2") == 0)
+            codec_name = (char *)"vp8";
+        else if (strcmp(codec_name, "vp9_nvv4l2") == 0)
+            codec_name = (char *)"vp9";
+    }
+#endif
+
+    const AVCodec *codec = find_codec_or_die(NULL, codec_name, st->codecpar->codec_type, 0);
+    st->codecpar->codec_id = codec->id;
+    return codec;
 }
 
 static int guess_input_channel_layout(InputStream *ist)

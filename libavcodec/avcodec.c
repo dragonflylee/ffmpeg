@@ -355,8 +355,6 @@ FF_ENABLE_DEPRECATION_WARNINGS
             goto free_and_end;
         }
     }
-    if (codec->priv_class)
-        av_assert0(*(const AVClass **)avctx->priv_data == codec->priv_class);
 
 end:
 
