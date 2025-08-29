@@ -35,6 +35,16 @@
 
 #include "libavformat/version_major.h"
 
+/*
+ * Define FFMPEG_STATIC_DLLEXPORT when the static libraries are linked into
+ * another shared library which has to re-export the AVIO API (e.g. libmpv).
+ */
+#if defined(_WIN32) && defined(FFMPEG_STATIC_DLLEXPORT)
+#    define av_export_avio __declspec(dllexport)
+#else
+#    define av_export_avio
+#endif
+
 /**
  * Seeking works like for a local file.
  */
@@ -313,7 +323,7 @@ typedef struct AVIOContext {
  *
  * @return Name of the protocol or NULL.
  */
-const char *avio_find_protocol_name(const char *url);
+av_export_avio const char *avio_find_protocol_name(const char *url);
 
 /**
  * Return AVIO_FLAG_* access flags corresponding to the access permissions
@@ -339,7 +349,7 @@ int avio_check(const char *url, int flags);
  *                containing options that were not found. May be NULL.
  * @return >=0 on success or negative on error.
  */
-int avio_open_dir(AVIODirContext **s, const char *url, AVDictionary **options);
+av_export_avio int avio_open_dir(AVIODirContext **s, const char *url, AVDictionary **options);
 
 /**
  * Get next directory entry.
@@ -352,7 +362,7 @@ int avio_open_dir(AVIODirContext **s, const char *url, AVDictionary **options);
  * @return >=0 on success or negative on error. End of list is not considered an
  *             error.
  */
-int avio_read_dir(AVIODirContext *s, AVIODirEntry **next);
+av_export_avio int avio_read_dir(AVIODirContext *s, AVIODirEntry **next);
 
 /**
  * Close directory.
@@ -363,14 +373,14 @@ int avio_read_dir(AVIODirContext *s, AVIODirEntry **next);
  * @param s         directory read context.
  * @return >=0 on success or negative on error.
  */
-int avio_close_dir(AVIODirContext **s);
+av_export_avio int avio_close_dir(AVIODirContext **s);
 
 /**
  * Free entry allocated by avio_read_dir().
  *
  * @param entry entry to be freed.
  */
-void avio_free_directory_entry(AVIODirEntry **entry);
+av_export_avio void avio_free_directory_entry(AVIODirEntry **entry);
 
 /**
  * Allocate and initialize an AVIOContext for buffered I/O. It must be later
