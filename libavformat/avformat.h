@@ -1963,12 +1963,12 @@ unsigned avformat_version(void);
 /**
  * Return the libavformat build-time configuration.
  */
-const char *avformat_configuration(void);
+av_export_avio const char *avformat_configuration(void);
 
 /**
  * Return the libavformat license.
  */
-const char *avformat_license(void);
+av_export_avio const char *avformat_license(void);
 
 /**
  * Do global initialization of network libraries. This is optional,
